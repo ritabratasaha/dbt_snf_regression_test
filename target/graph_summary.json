@@ -1,0 +1,1 @@
+{"_invocation_id": "9af502f0-65ad-40b7-be63-8bfaba302c67", "linked": {"0": {"name": "model.dbt_snf_regression_test.regression_execution", "type": "model"}, "1": {"name": "model.dbt_snf_regression_test.regression_outcome", "type": "model"}}}

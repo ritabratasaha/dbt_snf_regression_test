@@ -1,0 +1,106 @@
+[0m21:55:01.994819 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x110092b70>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x111c5f800>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x111c5f5c0>]}
+
+
+============================== 21:55:01.999593 | 7505d04a-e991-4de4-b200-a95e4fc4cdc1 ==============================
+[0m21:55:01.999593 [info ] [MainThread]: Running with dbt=1.10.13
+[0m21:55:02.000052 [debug] [MainThread]: running dbt with arguments {'write_json': 'True', 'log_path': 'logs', 'target_path': 'None', 'indirect_selection': 'eager', 'send_anonymous_usage_stats': 'True', 'version_check': 'True', 'use_experimental_parser': 'False', 'no_print': 'None', 'static_parser': 'True', 'quiet': 'False', 'empty': 'None', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'partial_parse': 'True', 'log_format': 'default', 'use_colors': 'True', 'invocation_command': 'dbt init', 'debug': 'False', 'profiles_dir': '/Users/saha/.dbt', 'introspect': 'True', 'cache_selected_only': 'False', 'log_cache_events': 'False', 'printer_width': '80', 'warn_error': 'None', 'fail_fast': 'False'}
+[0m21:55:59.361591 [error] [MainThread]: Encountered an error:
+
+[0m21:55:59.370770 [error] [MainThread]: Traceback (most recent call last):
+  File "/Users/saha/opt/miniconda3/envs/dbtenv/lib/python3.12/site-packages/dbt/cli/requires.py", line 178, in wrapper
+    result, success = func(*args, **kwargs)
+                      ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/saha/opt/miniconda3/envs/dbtenv/lib/python3.12/site-packages/dbt/cli/requires.py", line 128, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/saha/opt/miniconda3/envs/dbtenv/lib/python3.12/site-packages/dbt/cli/main.py", line 483, in init
+    results = task.run()
+              ^^^^^^^^^^
+  File "/Users/saha/opt/miniconda3/envs/dbtenv/lib/python3.12/site-packages/dbt/task/init.py", line 324, in run
+    project_name = self.get_valid_project_name()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/saha/opt/miniconda3/envs/dbtenv/lib/python3.12/site-packages/dbt/task/init.py", line 278, in get_valid_project_name
+    name = click.prompt("Enter a name for your project (letters, digits, underscore)")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/saha/opt/miniconda3/envs/dbtenv/lib/python3.12/site-packages/click/termui.py", line 168, in prompt
+    value = prompt_func(prompt)
+            ^^^^^^^^^^^^^^^^^^^
+  File "/Users/saha/opt/miniconda3/envs/dbtenv/lib/python3.12/site-packages/click/termui.py", line 151, in prompt_func
+    raise Abort() from None
+click.exceptions.Abort
+
+[0m21:55:59.381716 [debug] [MainThread]: Resource report: {"command_name": "init", "command_success": false, "command_wall_clock_time": 57.463726, "process_in_blocks": "0", "process_kernel_time": 0.485742, "process_mem_max_rss": "120692736", "process_out_blocks": "0", "process_user_time": 1.676187}
+[0m21:55:59.383716 [debug] [MainThread]: Command `dbt init` failed at 21:55:59.383085 after 57.47 seconds
+[0m21:55:59.387043 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10bcaa900>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x111718770>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x111ccf1a0>]}
+[0m21:55:59.387727 [debug] [MainThread]: Flushing usage events
+[0m21:56:00.647694 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m22:01:21.399981 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10d2cb8c0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1102f4830>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1102f4590>]}
+
+
+============================== 22:01:21.404634 | 9af502f0-65ad-40b7-be63-8bfaba302c67 ==============================
+[0m22:01:21.404634 [info ] [MainThread]: Running with dbt=1.10.13
+[0m22:01:21.405108 [debug] [MainThread]: running dbt with arguments {'send_anonymous_usage_stats': 'True', 'use_experimental_parser': 'False', 'indirect_selection': 'eager', 'log_path': '/Users/saha/Documents/Projects/dbt_snf_regression_test/logs', 'write_json': 'True', 'cache_selected_only': 'False', 'debug': 'False', 'introspect': 'True', 'use_colors': 'True', 'fail_fast': 'False', 'empty': 'False', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'log_format': 'default', 'partial_parse': 'True', 'quiet': 'False', 'profiles_dir': '/Users/saha/Documents/Projects/dbt_snf_regression_test', 'printer_width': '80', 'target_path': 'None', 'log_cache_events': 'False', 'invocation_command': 'dbt compile', 'version_check': 'True', 'warn_error': 'None', 'no_print': 'None', 'static_parser': 'True'}
+[0m22:01:22.553330 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': '9af502f0-65ad-40b7-be63-8bfaba302c67', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10f896840>]}
+[0m22:01:22.591909 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'adapter_info', 'label': '9af502f0-65ad-40b7-be63-8bfaba302c67', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10fc0e4b0>]}
+[0m22:01:22.592619 [info ] [MainThread]: Registered adapter: snowflake=1.10.2
+[0m22:01:22.709489 [debug] [MainThread]: checksum: 9f0c81e2574b4ff463f3d16d080df83c6982fc0372c9feeacae0504ac9ea3ffe, vars: {}, profile: , target: , version: 1.10.13
+[0m22:01:22.710193 [info ] [MainThread]: Unable to do partial parsing because saved manifest not found. Starting full parse.
+[0m22:01:22.710492 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'partial_parser', 'label': '9af502f0-65ad-40b7-be63-8bfaba302c67', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x126e340b0>]}
+[0m22:01:23.361616 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'load_project', 'label': '9af502f0-65ad-40b7-be63-8bfaba302c67', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1271e2db0>]}
+[0m22:01:23.396871 [debug] [MainThread]: Wrote artifact WritableManifest to /Users/saha/Documents/Projects/dbt_snf_regression_test/target/manifest.json
+[0m22:01:23.399272 [debug] [MainThread]: Wrote artifact SemanticManifest to /Users/saha/Documents/Projects/dbt_snf_regression_test/target/semantic_manifest.json
+[0m22:01:23.411742 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'resource_counts', 'label': '9af502f0-65ad-40b7-be63-8bfaba302c67', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x127201280>]}
+[0m22:01:23.412092 [info ] [MainThread]: Found 2 models, 481 macros
+[0m22:01:23.412342 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': '9af502f0-65ad-40b7-be63-8bfaba302c67', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x12727f2c0>]}
+[0m22:01:23.413811 [info ] [MainThread]: 
+[0m22:01:23.414090 [info ] [MainThread]: Concurrency: 4 threads (target='sandbox')
+[0m22:01:23.414288 [info ] [MainThread]: 
+[0m22:01:23.414645 [debug] [MainThread]: Acquiring new snowflake connection 'master'
+[0m22:01:23.417262 [debug] [ThreadPool]: Acquiring new snowflake connection 'list_database_staging'
+[0m22:01:23.527785 [debug] [ThreadPool]: Using snowflake connection "list_database_staging"
+[0m22:01:23.528111 [debug] [ThreadPool]: On list_database_staging: show objects in database.staging
+    limit 10000
+    
+
+/* {"app": "dbt", "dbt_version": "1.10.13", "profile_name": "dbt_snf_regression_test", "target_name": "sandbox", "connection_name": "list_database_staging"} */;
+[0m22:01:23.528314 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m22:01:25.058801 [debug] [ThreadPool]: Snowflake adapter: Error running SQL: show objects in database.staging
+    limit 10000
+    
+
+/* {"app": "dbt", "dbt_version": "1.10.13", "profile_name": "dbt_snf_regression_test", "target_name": "sandbox", "connection_name": "list_database_staging"} */;
+[0m22:01:25.059442 [debug] [ThreadPool]: Snowflake adapter: Rolling back transaction.
+[0m22:01:25.059921 [debug] [ThreadPool]: Snowflake adapter: Error running SQL: macro list_relations_without_caching
+[0m22:01:25.060254 [debug] [ThreadPool]: Snowflake adapter: Rolling back transaction.
+[0m22:01:25.061089 [debug] [MainThread]: Connection 'master' was properly closed.
+[0m22:01:25.061429 [debug] [MainThread]: Connection 'list_database_staging' was left open.
+[0m22:01:25.061756 [debug] [MainThread]: On list_database_staging: No close available on handle
+[0m22:01:25.062261 [error] [MainThread]: Encountered an error:
+Database Error
+  290404 (08001): 404 Not Found: post xxxxx.snowflakecomputing.com:443/session/v1/login-request
+[0m22:01:25.069627 [debug] [MainThread]: Resource report: {"command_name": "compile", "command_success": false, "command_wall_clock_time": 3.7475355, "process_in_blocks": "0", "process_kernel_time": 0.779304, "process_mem_max_rss": "237731840", "process_out_blocks": "0", "process_user_time": 3.436985}
+[0m22:01:25.070652 [debug] [MainThread]: Command `dbt compile` failed at 22:01:25.070259 after 3.75 seconds
+[0m22:01:25.071122 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10e6d3140>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1271e1640>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x126e5d3d0>]}
+[0m22:01:25.071788 [debug] [MainThread]: Flushing usage events
+[0m22:01:26.372221 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m22:03:22.582320 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1114f2120>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1116f3080>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1116f2de0>]}
+
+
+============================== 22:03:22.587216 | e9035216-9e64-4173-8838-653c5db092c9 ==============================
+[0m22:03:22.587216 [info ] [MainThread]: Running with dbt=1.10.13
+[0m22:03:22.587678 [debug] [MainThread]: running dbt with arguments {'log_format': 'default', 'log_path': '/Users/saha/Documents/Projects/dbt_snf_regression_test/logs', 'quiet': 'False', 'log_cache_events': 'False', 'printer_width': '80', 'partial_parse': 'True', 'version_check': 'True', 'debug': 'False', 'use_experimental_parser': 'False', 'static_parser': 'True', 'introspect': 'True', 'fail_fast': 'False', 'warn_error': 'None', 'send_anonymous_usage_stats': 'True', 'write_json': 'True', 'cache_selected_only': 'False', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'no_print': 'None', 'use_colors': 'True', 'empty': 'None', 'indirect_selection': 'eager', 'invocation_command': 'dbt parse', 'profiles_dir': '/Users/saha/Documents/Projects/dbt_snf_regression_test', 'target_path': 'None'}
+[0m22:03:23.733982 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': 'e9035216-9e64-4173-8838-653c5db092c9', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1281340e0>]}
+[0m22:03:23.771713 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'adapter_info', 'label': 'e9035216-9e64-4173-8838-653c5db092c9', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11103aed0>]}
+[0m22:03:23.772391 [info ] [MainThread]: Registered adapter: snowflake=1.10.2
+[0m22:03:23.898898 [debug] [MainThread]: checksum: 9f0c81e2574b4ff463f3d16d080df83c6982fc0372c9feeacae0504ac9ea3ffe, vars: {}, profile: , target: , version: 1.10.13
+[0m22:03:23.966268 [debug] [MainThread]: Partial parsing enabled: 0 files deleted, 0 files added, 0 files changed.
+[0m22:03:23.966550 [debug] [MainThread]: Partial parsing enabled, no changes found, skipping parsing
+[0m22:03:23.983375 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'load_project', 'label': 'e9035216-9e64-4173-8838-653c5db092c9', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1281a91c0>]}
+[0m22:03:23.985651 [info ] [MainThread]: Performance info: /Users/saha/Documents/Projects/dbt_snf_regression_test/target/perf_info.json
+[0m22:03:24.022575 [debug] [MainThread]: Wrote artifact WritableManifest to /Users/saha/Documents/Projects/dbt_snf_regression_test/target/manifest.json
+[0m22:03:24.024644 [debug] [MainThread]: Wrote artifact SemanticManifest to /Users/saha/Documents/Projects/dbt_snf_regression_test/target/semantic_manifest.json
+[0m22:03:24.028894 [debug] [MainThread]: Resource report: {"command_name": "parse", "command_success": true, "command_wall_clock_time": 1.5254009, "process_in_blocks": "0", "process_kernel_time": 0.66189, "process_mem_max_rss": "209993728", "process_out_blocks": "0", "process_user_time": 2.570466}
+[0m22:03:24.029745 [debug] [MainThread]: Command `dbt parse` succeeded at 22:03:24.029506 after 1.53 seconds
+[0m22:03:24.030054 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1109ca1e0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1116f3080>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1116f2ea0>]}
+[0m22:03:24.030294 [debug] [MainThread]: Flushing usage events
+[0m22:03:25.360020 [debug] [MainThread]: An error was encountered while trying to flush usage events

@@ -1,0 +1,25 @@
+dbt_snf_regression_test:
+  target: sandbox
+  outputs:
+    sandbox:
+      type: snowflake
+      account: xxxxx
+      user: username
+      password: password
+      role: AccountAdmin
+      database: database
+      warehouse: compute_wh
+      schema: staging
+      threads: 4
+      client_session_keep_alive: false
+    regression:
+      type: snowflake
+      account: xxxxx
+      user: username
+      password: password
+      role: AccountAdmin
+      database: database
+      warehouse: compute_wh
+      schema: staging
+      threads: 4
+      client_session_keep_alive: false
