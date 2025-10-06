@@ -1,0 +1,104 @@
+name: Run dbt regression_execution
+
+on:
+  workflow_dispatch:
+    inputs:
+      selector:
+        description: "dbt selector for building models (e.g., model path/tag)"
+        required: false
+        default: "+regression_execution"
+      run_push_configs:
+        description: "Upload release + config files to Snowflake stage"
+        required: false
+        default: "false"
+      release_notes_file:
+        description: "Path to release notes JSON in repo (e.g., release_template/release_v1.0.json)"
+        required: false
+        default: ""
+      regression_config_file:
+        description: "Path to regression_config.json in repo"
+        required: false
+        default: ""
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install dbt-snowflake "snowflake-snowpark-python[pandas]" modin pandas pyyaml
+
+      - name: Create profiles.yml
+        run: |
+          mkdir -p ~/.dbt
+          cat > ~/.dbt/profiles.yml << 'EOF'
+          dbt_snf_regression_test:
+            target: sandbox
+            outputs:
+              sandbox:
+                type: snowflake
+                account: ${SNOWFLAKE_ACCOUNT}
+                user: ${SNOWFLAKE_USER}
+                password: ${SNOWFLAKE_PASSWORD}
+                role: ${SNOWFLAKE_ROLE}
+                database: ${SNOWFLAKE_DATABASE}
+                warehouse: ${SNOWFLAKE_WAREHOUSE}
+                schema: ${SNOWFLAKE_SCHEMA}
+                threads: 4
+                client_session_keep_alive: false
+              regression:
+                type: snowflake
+                account: ${SNOWFLAKE_ACCOUNT}
+                user: ${SNOWFLAKE_USER}
+                password: ${SNOWFLAKE_PASSWORD}
+                role: ${SNOWFLAKE_ROLE}
+                database: ${SNOWFLAKE_DATABASE}
+                warehouse: ${SNOWFLAKE_WAREHOUSE}
+                schema: ${SNOWFLAKE_SCHEMA}
+                threads: 4
+                client_session_keep_alive: false
+          EOF
+        env:
+          SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+          SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+          SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+          SNOWFLAKE_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
+          SNOWFLAKE_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
+          SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+          SNOWFLAKE_SCHEMA: ${{ secrets.SNOWFLAKE_SCHEMA }}
+
+      - name: dbt deps
+        run: dbt deps
+
+      - name: Optionally push configs to Snowflake stage
+        if: inputs.run_push_configs == 'true'
+        run: |
+          RELEASE_PATH=${{ inputs.release_notes_file }}
+          CONFIG_PATH=${{ inputs.regression_config_file }}
+          if [ -n "$RELEASE_PATH" ] && [ -n "$CONFIG_PATH" ]; then
+            dbt run-operation push_configs --args '{"release_notes_file": "'"$GITHUB_WORKSPACE/$RELEASE_PATH"'", "regression_config_file": "'"$GITHUB_WORKSPACE/$CONFIG_PATH"'"}'
+          else
+            echo "release_notes_file and regression_config_file must be provided when run_push_configs is true" >&2
+            exit 1
+          fi
+
+      - name: Build reference (sandbox)
+        run: dbt build --target sandbox -s "${{ inputs.selector }}"
+
+      - name: Build regression (regression)
+        run: dbt build --target regression -s "${{ inputs.selector }}"
+
+      - name: Run regression_execution model
+        run: dbt run -s regression_execution
+
+

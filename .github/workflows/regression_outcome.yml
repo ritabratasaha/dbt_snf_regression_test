@@ -1,0 +1,76 @@
+name: Run dbt regression_outcome
+
+on:
+  workflow_dispatch:
+    inputs:
+      selector:
+        description: "dbt selector for building models (e.g., model path/tag)"
+        required: false
+        default: "+regression_outcome"
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install dbt-snowflake "snowflake-snowpark-python[pandas]" modin pandas pyyaml
+
+      - name: Create profiles.yml
+        run: |
+          mkdir -p ~/.dbt
+          cat > ~/.dbt/profiles.yml << 'EOF'
+          dbt_snf_regression_test:
+            target: sandbox
+            outputs:
+              sandbox:
+                type: snowflake
+                account: ${SNOWFLAKE_ACCOUNT}
+                user: ${SNOWFLAKE_USER}
+                password: ${SNOWFLAKE_PASSWORD}
+                role: ${SNOWFLAKE_ROLE}
+                database: ${SNOWFLAKE_DATABASE}
+                warehouse: ${SNOWFLAKE_WAREHOUSE}
+                schema: ${SNOWFLAKE_SCHEMA}
+                threads: 4
+                client_session_keep_alive: false
+              regression:
+                type: snowflake
+                account: ${SNOWFLAKE_ACCOUNT}
+                user: ${SNOWFLAKE_USER}
+                password: ${SNOWFLAKE_PASSWORD}
+                role: ${SNOWFLAKE_ROLE}
+                database: ${SNOWFLAKE_DATABASE}
+                warehouse: ${SNOWFLAKE_WAREHOUSE}
+                schema: ${SNOWFLAKE_SCHEMA}
+                threads: 4
+                client_session_keep_alive: false
+          EOF
+        env:
+          SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+          SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+          SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+          SNOWFLAKE_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
+          SNOWFLAKE_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
+          SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+          SNOWFLAKE_SCHEMA: ${{ secrets.SNOWFLAKE_SCHEMA }}
+
+      - name: dbt deps
+        run: dbt deps
+
+      - name: Run regression_outcome model
+        run: |
+          # Ensure execution model ran beforehand in your pipeline
+          dbt run -s regression_outcome
+
+

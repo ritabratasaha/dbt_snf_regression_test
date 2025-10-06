@@ -1,0 +1,15 @@
+{
+"releases": [
+  {
+    "//first_comment": "This is a template release note file, that captures the list of existing models which have been changed or modified",
+    "//second_comment" : "New models need not be added as it cannot participate in regression test",
+    "version": 1.0,
+    "description": "Release notes for the current Data Product / dbt package",
+    "date": "2025-01-01",
+    "models_impacted": {
+      "MODEL_NAME_1": ["COLUMN_1","COLUMN_2"],
+      "MODEL_NAME_2": ["COLUMN_1","COLUMN_2"]
+    }
+  }
+]
+}
