@@ -153,10 +153,11 @@ def data_type_validation_process(session,config:dict) -> Tuple[str, pd.DataFrame
         data_type_match_list = (df_results['DATA_TYPE_MATCH'].unique()).tolist()         
         if 'Fail' in data_type_match_list :
             status = 'Fail'
+            df_results_filter = df_results[df_results['DATA_TYPE_MATCH']=='Fail']       
+            df_results_col  = df_results_filter[['COLUMN_NAME', 'DATA_TYPE_MATCH']]
         else:
             status = 'Pass'
-        df_results_filter = df_results[df_results['DATA_TYPE_MATCH']=='Pass']       
-        df_results_col  = df_results_filter[['COLUMN_NAME', 'DATA_TYPE_MATCH']]
+            df_results_col  = df_results[['COLUMN_NAME', 'DATA_TYPE_MATCH']]
         log_message(session,'data_type_validation_process',f"""Data type check for model : {model} is : {status}""")
     
     except:
