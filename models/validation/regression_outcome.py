@@ -17,7 +17,8 @@ def model(dbt, session):
     df_table_list = session.sql(f"""select table_schema||'.'||table_name table_name from information_schema.tables 
                                 where table_schema = 'VALIDATION_REGRESSION' and 
                                 table_type = 'BASE TABLE' and 
-                                table_name not like 'REGRESSION%'""").to_pandas()
+                                table_name not like ('REGRESSION%') and 
+                                table_name not like ('DATA_TYPE%') """).to_pandas()
     
     session.sql(""" create or replace  table validation_regression.regression_temptable(len_records int) """).collect()
 

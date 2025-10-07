@@ -119,7 +119,7 @@ def regression_process(session,database:str, model:str, schema:str, pandas_cmd:s
     """
     The regression process that compares two dataframes
     """
-    log_message(session,'get_model_columns',f"""Function Initiated""")
+    log_message(session,'regression_process',f"""Function Initiated""")
     try:
         model_name_ref = database + '.' + schema + '.' + model
         model_name_regression = database + '.' + schema  + '_regression.' + model
