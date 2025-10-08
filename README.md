@@ -1,41 +1,59 @@
-# 🔵 dbt_snf_regression_test
+# 🧪 dbt_snf_regression_test
 
-This package provides a simple regression-testing workflow for Snowflake-backed dbt projects using dbt Python models. It compares a set of reference models to a corresponding set of regression models (materialized into a parallel schema with a `_regression` suffix) and records any differences.
-This package cannot be executed on its own. It needs to be imported into a dbt project that is building a data product on snowflake.
+A regression testing framework for Snowflake-backed dbt projects using dbt Python models. It compares reference models to regression models (materialized into parallel schemas with `_regression` suffix) and records any differences.
 
-The project includes:
-- A release note JSON template to declare impacted dbt models/columns
-- Macros to manage schemas and stage configuration files in Snowflake
-- Two dbt Python models to execute and summarize regression results
+> **Note**: This package cannot be executed on its own. It must be imported into a dbt project building a data product on Snowflake.
+
+## Table of Contents
+
+- [Components](#components)
+- [Purpose](#purpose)
+- [Dependencies](#dependencies)
+- [Project Artifacts](#project-artifacts)
+- [Implementation Steps](#implementation-steps)
+
+## 📦 Components
+
+- **Release Template**: JSON template to declare impacted dbt models/columns
+- **Macros**: 
+  - `push_configs`: Upload config files to Snowflake stage
+  - `generate_schema_name`: Create schema with `_regression` suffix when target is regression in your dbt command
+- **Python Models**:
+  - `data_type_validation`: Schema-level validation (data types, lengths, precision)
+  - `regression_execution`: Data content comparison between reference and regression models
+  - `regression_outcome`: Overall test result aggregation
 
 ---
 
-## 🔵 Purpose of the package
+## 🎯 Purpose
 
-- Run data regression tests between two Snowflake tables for the same model: the reference version in the base schema and the regression version in a sibling schema with a `_regression` suffix.
-- Upload and read config and release metadata from a Snowflake stage to dynamically determine which models and columns are included in a given test run.
-- Persist the comparison results for auditing.
+- **Schema Validation**: Compare data types, lengths, and precision between reference and regression model schemas to ensure structural consistency.
+- **Data Regression Testing**: Run comprehensive data regression tests between two Snowflake tables for the same model: the reference version in the base schema and the regression version in a sibling schema with a `_regression` suffix.
+- **Dynamic Configuration**: Upload and read config and release metadata from a Snowflake stage to dynamically determine which models and columns are included in a given test run.
+- **Audit Trail**: Persist all comparison results and execution logs for comprehensive auditing and troubleshooting.
 
 ---
 
-## 🔵 Dependencies
+## 📋 Dependencies
 
-This package requires the following Python packages to be available in your Snowflake environment:
+Required Python packages (auto-installed via dbt model config):
 
 - `snowflake-snowpark-python` - Snowflake Snowpark Python API
 - `yaml` - YAML file parsing
 - `pandas` - Data manipulation and analysis
-- `modin` - High-performance pandas alternative for large datasets
+- `modin` - Modin is a Python library designed to accelerate and scale Pandas workflows, particularly when dealing with large datasets. It acts as a drop-in replacement for Pandas, meaning users can often achieve significant performance improvements by simply changing the import statement in their code.
 
 These packages are automatically installed when the Python models run, as they are specified in the `dbt.config()` calls within each model.
 
 <br />
 
-# 🔵 Lets study the primary project artefacts
+# 🔧 Project Artifacts
 
-## 🔵 1. Release template
+## 📄 1. Release Template
 
-Purpose: Declare which existing models changed in a release and which columns changed in each model. Only existing models participate in regression testing.
+**Purpose**: Declare which existing models changed in a release and which columns changed in each model.
+
+> Only existing models participate in regression testing.
 
 File: `release_template/release_v<x>.0.json`
 
@@ -57,32 +75,37 @@ Structure example:
 }
 ```
 
-Sample usage:
-1) Copy a template to a real file, e.g. `/releases/release_v1.0.json`, and fill in impacted models/columns. You can use github mcp to do this job seamlessly for you. To use mcp you need to create a pull request and then share the pull request url to the mcp server to do the job for you
-2) Upload both to Snowflake using the macro `push_configs`:
+### 📋 Usage
 
-Let us review the macros in the next section
+1. Copy template to real file (e.g., `/releases/release_v1.0.json`) and fill in impacted models/columns
+2. Upload to Snowflake using the `push_configs` macro
+
+> **Tip**: Use GitHub MCP for automation - create a PR and share the URL with the MCP server
 
 ---
 
-## 🔵 2. Macros
+## ⚙️ 2.dbt Macros
 
-### a. `generate_schema_name(custom_schema_name, node)`
-Purpose: Append `_regression` to the target schema when the active dbt target is `regression`. This lets you materialize the same models into a parallel schema for A/B comparison without changing model code.
+### 🏗️ `generate_schema_name(custom_schema_name, node)`
 
-Note: You do not need to execute this macro directly. dbt invokes `generate_schema_name` automatically during model materialization. When you run with `--target sandbox`, models materialize to the base schema (for example `STAGING`), and when you run with `--target regression`, models materialize to the suffixed schema (for example `STAGING_REGRESSION`).
+**Purpose**: Append `_regression` to target schema when using `--target regression`
 
-Effects:
-- Running with `--target sandbox` materializes to the base schema (e.g., `STAGING`).
-- Running with `--target regression` materializes to the suffixed schema (e.g., `STAGING_REGRESSION`).
+- `--target sandbox` → Base schema (e.g., `STAGING`)
+- `--target regression` → Suffixed schema (e.g., `STAGING_REGRESSION`)
 
-### b. `push_configs(release_notes_file, regression_config_file)`
-Purpose: The macro creates (or replaces):
+> **Note**: dbt invokes this macro automatically during model materialization
+
+### 📤 `push_configs(release_notes_file, regression_config_file)`
+
+**Purpose**: Upload configuration files to Snowflake stage
+
+**Creates**:
 - Schema: `validation_regression`
-- Stage: `validation_regression.configs` (JSON file format)
-Then PUT two local JSON files into that stage:
-- `release_notes_file`: describes impacted models/columns for the release
-- `regression_config_file`: contains per-model regression configuration
+- Stage: `validation_regression.configs`
+
+**Uploads**:
+- `release_notes_file`: Impacted models/columns for the release
+- `regression_config_file`: Per-model regression configuration
 
 
 Sample usage:
@@ -106,36 +129,56 @@ ls @product_database.validation_regression.configs;
 ```
 ---
 
-## 🔵 3. dbt models to perform regression test
+## 🐍 3. dbt Python Models
 
-### a. `models/validation/regression_execution.py`
-Purpose: Orchestrates the regression comparison for each impacted model. This model performs comprehensive regression testing with the following workflow:
+### 🏗️ `data_type_validation.py`
 
-Here are some of the high level functions performed by the model :
+**Purpose**: Schema-level validation to ensure structural consistency
 
-**Pre-execution validation:**
-- Checks if the required schema and config files exist
+**Validation checks**:
+- Data type comparison between schemas
+- Character length validation for VARCHAR/TEXT columns
+- Numeric precision and radix validation
+- Column presence verification
 
-**Dynamic configuration parsing:**
-- Automatically selects the latest release file from the stage based on modification date
-- Parses release notes to identify impacted models and changed columns
-- Reads regression configuration to determine which models to test
+**Workflow**:
+1. Read column metadata from `INFORMATION_SCHEMA.COLUMNS`
+2. Perform left join to identify mismatches
+3. Compare data types, lengths, precision, and radix values
+4. Return pass/fail status with detailed failure information
 
-**Regression For each impacted model:**
-- Builds a column list excluding changed columns (from release notes)
-- Reads the reference dataset from `<database>.<schema>.<model>`
-- Reads the regression dataset from `<database>.<schema>_regression.<model>`
-- Applies optional filtering (by column, operator, value) if configured
-- Sorts data consistently for comparison
-- Compares DataFrame sizes before detailed comparison
-- Performs row-by-row comparison using pandas `.compare()`
-- Stores detailed results in `validation_regression.<model>` (truncated to first 10 differences)
-- Writes comprehensive logs to `validation_regression.regression_execution_log`. This log table is updated at every step so that the progress of the model can be found incase of any failure
+**Outputs:**
+- Validation results per model in `validation_regression.data_type_validation` (timestamp, model, status, message columns)
+- Execution log table `validation_regression.data_type_validation_log`
 
-**Error handling:**
-- Extensive logging throughout execution
-- Graceful handling of missing schemas, files, or data mismatches
-- SQL injection protection for log messages
+Sample usage:
+
+```bash
+dbt run --target regression -s data_type_validation
+```
+
+**Technical Notes:**
+- Uses `INFORMATION_SCHEMA.COLUMNS` for metadata comparison
+- Handles NULL values with `NVL()` functions for robust comparison
+- Returns detailed failure information for troubleshooting
+- Creates separate log table for audit trail
+
+### 🔄 `regression_execution.py`
+
+**Purpose**: Orchestrate regression comparison for each impacted model
+
+**Workflow**:
+
+1. **Pre-execution validation**: Check required schema and config files exist
+2. **Configuration parsing**: Auto-select latest release file, parse impacted models/columns
+3. **Model processing**: For each model:
+   - Exclude changed columns from comparison
+   - Read reference and regression datasets
+   - Apply optional filtering and sorting
+   - Compare DataFrame sizes and perform row-by-row comparison
+   - Store results in `validation_regression.<model>` (first 10 differences)
+   - Log progress to `validation_regression.regression_execution_log`
+4. **Error handling**: Extensive logging, graceful error handling, SQL injection protection
 
 Sample usage:
 
@@ -145,7 +188,7 @@ dbt run --target regression -s regression_execution
 ```
 
 ### Note: 
-For the result of this model to be materialised in the `validation_regression` schema, add the following selction to your dbt_project.yml
+For the results of these models to be materialised in the `validation_regression` schema, add the following configuration to your dbt_project.yml
 
 ```
 models:
@@ -167,9 +210,13 @@ Outputs:
 - Only processes models that appear in both release notes and regression config
 - Handles data size mismatches gracefully with detailed error messages
 
-### b. `models/validation/regression_outcome.py`
-Purpose: Aggregates the individual results captured by `regression_execution` and returns a single-row table indicating the status of the overall regression test. 
-Currently, it checks the length of the stored `results` strings and returns `'TRUE'` only if all have the expected size (placeholder rule).
+
+
+### 📊 `regression_outcome.py`
+
+**Purpose**: Aggregate individual results into overall regression test status
+
+**Current logic**: Checks length of stored `results` strings and returns `'TRUE'` if all have expected size
 
 Sample usage:
 
@@ -183,9 +230,9 @@ Output:
 ---
 <br />
 
-# 🔵 Steps to execute regression on a data product
+# 🚀 How will you implementation regression in your data product ?
 
-## 🔵 1. Import this project into your data product repo by adding the repo details to your package.yml
+## 📥 1. Import Package in your data product dbt project
 
 Example:
 
@@ -201,12 +248,12 @@ Use dbt deps to download all dependencies in the data product package
 
 ---
 
-## 🔵 2. Setup profiles and targets of your data product repo
+## ⚙️ 2. Configure Profiles
 
-Create a Snowflake target in `profiles.yml` (you will supply credentials):
-- `regression`: builds the regression models into `<schema>_regression` (via the macro)
+Create a Snowflake target in your data product `profiles.yml`:
+- `regression`: builds models into `<schema>_regression` (via macro)
 
-Example:
+Example (Assumption: data product dbt project name is sample_dbt):
 
 ```yml
 sample_dbt:
@@ -241,13 +288,14 @@ sample_dbt:
 
 ---
 
-## 🔵 3. Create the release notes from release template
+## 📝 3. Create Release Notes
 
-Refer to [Release Notes](#1-release-template)
+Refer to [Release Template](#-1-release-template)
 
-## 🔵 4. Create the regression config file
+## ⚙️ 4. Create Regression Config
 
-This file is owned by the data product repo. This is a one time effort and needs to be created meticulously for each model that needs to participate in the regression process.
+The filters are optional. However they help you to keep the dataset size within limit. Else the snowflake warehouse will need vertical scaling
+> **Note**: One-time setup for each model participating in regression testing
 
 Example : 
 
@@ -273,34 +321,47 @@ Example :
 
 ```
 
-## 🔵 5. Upload configs to snowflake
+## ☁️ 5. Upload Configs to Snowflake
 
-Once [3](#3-create-the-release-notes-from-release-template) and [4](#4-create-the-regression-config-file) are created we need to upload them to snowflake using the [macro](#push_configsrelease_notes_file-regression_config_file)
+Upload release notes and regression config using the [`push_configs` macro](#-push_configsrelease_notes_file-regression_config_file)
 
-## 🔵 6. Run the dbt models of the data product on its original schema
+## 🏗️ 6. Build Reference Models
+
+Assumption: Env where regression is performed is sandbox
 
 ```bash 
 dbt run --target sandbox --select staging marts
 ```
 
-## 🔵 7. Run the dbt dbt models of the data product on the _regression schema
+## 🔄 7. Build Regression Models
 
 ```bash 
 dbt run --target regression --select staging marts
 ```
 
-## 🔵 8. Run the dbt models of the imported regression package
+## 🧪 8. Execute Regression Tests
 
 ```bash 
+dbt run --target regression --select data_type_validation
 dbt run --target regression --select regression_execution 
 dbt run --target regression --select regression_outcome 
 ```
 
-## 🔵 9. Verify the data from the snowflake tables
+## ✅ 9. Verify Results
 
 ```sql
-Select * from <database>.validation_regression.regression_execution;
-Select * from <database>.validation_regression.regression_outcome
+-- Check data type validation results
+SELECT * FROM <database>.validation_regression.data_type_validation;
+
+-- Check regression execution results  
+SELECT * FROM <database>.validation_regression.regression_execution;
+
+-- Check overall regression outcome
+SELECT * FROM <database>.validation_regression.regression_outcome;
+
+-- Check execution logs
+SELECT * FROM <database>.validation_regression.data_type_validation_log;
+SELECT * FROM <database>.validation_regression.regression_execution_log;
 ```
 
 ---
