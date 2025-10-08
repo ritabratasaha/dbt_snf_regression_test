@@ -363,7 +363,13 @@ SELECT * FROM <database>.validation_regression.regression_outcome;
 SELECT * FROM <database>.validation_regression.data_type_validation_log;
 SELECT * FROM <database>.validation_regression.regression_execution_log;
 ```
+Once you are done with all these, login to Snowflake and you should see similar structures as below: 
+
+![Sample Database Objects Part1](/sample_screenshots/database_output_part1.png)
+
+![Sample Database Objects Part2](/sample_screenshots/database_output_part2.png)
 
 ---
 
+That is it !!. Hope you find this useful..
 
