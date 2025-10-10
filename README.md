@@ -291,10 +291,22 @@ sample_dbt:
 ## 📝 3. Create Release Notes
 
 Refer to [Release Template](#-1-release-template)
+Create a release template under /releases/ with referrence to the template file /dbt_packages/release_template/release_v<x>.0.json
+
+Create folder /releases manually or else cursor can do that for you
+
+You can create the file manually however I would suggest using a MCP host connected to Github MCP server. Here is a sample prompt that you can use:
+
+```
+Hey, can you find out then changes in data model that has been done on this github pull request ?
+Github Pull Request URL : <>
+Once you find out the details, use the release template in the folder /dbt_packages/release_template/release_v<x>.0.json and create release file under /releases/ based on the template
+
+```
 
 ## ⚙️ 4. Create Regression Config
 
-The filters are optional. However they help you to keep the dataset size within limit. Else the snowflake warehouse will need vertical scaling
+Move the release config file from the /dbt_packages where it was imported from the external dbt repo to the project root / and fill in the detail for all the models for which you need to perform regression. The filters are optional. However they help you to keep the dataset size within limit. Else the snowflake warehouse will need vertical scaling
 > **Note**: One-time setup for each model participating in regression testing
 
 Example : 
