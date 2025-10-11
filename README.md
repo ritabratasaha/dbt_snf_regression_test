@@ -370,6 +370,17 @@ dbt run --target regression --select staging marts
 
 ## 🧪 9. Execute Regression Tests
 
+For the results of these models to be materialised in the `validation_regression` schema, add the following configuration to your dbt_project.yml
+
+```
+models:
+  dbt_snf_regression_test:
+    validation:
+      +schema: validation      
+      +materialized: table
+
+```
+
 ```bash 
 dbt run --target regression --select data_type_validation
 dbt run --target regression --select regression_execution 
