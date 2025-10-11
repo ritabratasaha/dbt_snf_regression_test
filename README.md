@@ -232,7 +232,24 @@ Output:
 
 # 🚀 How will you implementation regression in your data product ?
 
-## 📥 1. Import Package in your data product dbt project
+## 📝 1. Update the exisiting schema name macro with an update to create _regression schema when the target is `regression`
+
+```
+{% macro generate_schema_name(custom_schema_name, node) -%}
+    {%- set default_schema = target.schema -%}
+    {%- if custom_schema_name is none -%}
+        {{ default_schema }}
+    {%- else -%}
+        {%- if target.name == 'regression' %}        
+            {{ custom_schema_name | trim }}_regression        
+        {%- else -%}
+            {{ custom_schema_name | trim }}
+        {%- endif -%}    
+    {%- endif -%}
+{%- endmacro %}
+```
+
+## 📥 2. Import Package in your data product dbt project
 
 Example:
 
@@ -248,7 +265,7 @@ Use dbt deps to download all dependencies in the data product package
 
 ---
 
-## ⚙️ 2. Configure Profiles
+## ⚙️ 3. Configure Profiles
 
 Create a Snowflake target in your data product `profiles.yml`:
 - `regression`: builds models into `<schema>_regression` (via macro)
@@ -288,7 +305,7 @@ sample_dbt:
 
 ---
 
-## 📝 3. Create Release Notes
+## 📝 4. Create Release Notes
 
 Refer to [Release Template](#-1-release-template)
 Create a release template under /releases/ with referrence to the template file /dbt_packages/release_template/release_v<x>.0.json
@@ -304,7 +321,7 @@ Once you find out the details, use the release template in the folder /dbt_packa
 
 ```
 
-## ⚙️ 4. Create Regression Config
+## ⚙️ 5. Create Regression Config
 
 Move the release config file from the /dbt_packages where it was imported from the external dbt repo to the project root / and fill in the detail for all the models for which you need to perform regression. The filters are optional. However they help you to keep the dataset size within limit. Else the snowflake warehouse will need vertical scaling
 > **Note**: One-time setup for each model participating in regression testing
@@ -333,11 +350,11 @@ Example :
 
 ```
 
-## ☁️ 5. Upload Configs to Snowflake
+## ☁️ 6. Upload Configs to Snowflake
 
 Upload release notes and regression config using the [`push_configs` macro](#-push_configsrelease_notes_file-regression_config_file)
 
-## 🏗️ 6. Build Reference Models
+## 🏗️ 7. Build Reference Models
 
 Assumption: Env where regression is performed is sandbox
 
@@ -345,13 +362,13 @@ Assumption: Env where regression is performed is sandbox
 dbt run --target sandbox --select staging marts
 ```
 
-## 🔄 7. Build Regression Models
+## 🔄 8. Build Regression Models
 
 ```bash 
 dbt run --target regression --select staging marts
 ```
 
-## 🧪 8. Execute Regression Tests
+## 🧪 9. Execute Regression Tests
 
 ```bash 
 dbt run --target regression --select data_type_validation
@@ -359,7 +376,7 @@ dbt run --target regression --select regression_execution
 dbt run --target regression --select regression_outcome 
 ```
 
-## ✅ 9. Verify Results
+## ✅ 10. Verify Results
 
 ```sql
 -- Check data type validation results
